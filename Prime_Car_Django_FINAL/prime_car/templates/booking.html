@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load locadora_extras %}
+{% block title %}Reservar {{ vehicle.display_name }}{% endblock %}
+{% block content %}
+<section class="container section">
+  <p class="breadcrumb"><a href="{% url 'catalog' %}">Veículos</a> / <a href="{% url 'vehicle_detail' vehicle.pk %}">{{ vehicle.display_name }}</a> / Reserva</p>
+  <h1>Reservar {{ vehicle.display_name }}</h1>
+  <div class="layout-detail">
+    <form method="post" class="card form-card" data-loading data-quote-url="{% url 'quote_json' vehicle.pk %}" id="booking-form">
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="message error">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+      {% if review %}<div class="message info">Revise os valores abaixo e clique em “Confirmar reserva” para enviar a solicitação.</div>{% endif %}
+
+      <h2>1. Período</h2>
+      <div class="grid-2">
+        {% include "includes/field.html" with field=form.pickup_at %}
+        {% include "includes/field.html" with field=form.return_at %}
+      </div>
+
+      {% if form.extra_rows %}
+      <h2>2. Personalize seu aluguel</h2>
+      {% for row in form.extra_rows %}
+        <div class="extra">
+          <label class="check-label">{{ row.check }} <span><strong>{{ row.extra.name }}</strong> — {{ row.extra.price|brl }} <small>({{ row.extra.get_billing_type_display }})</small></span></label>
+          {% if row.extra.description %}<small class="muted">{{ row.extra.description }}</small>{% endif %}
+          {% if row.qty %}<div class="qty">{{ row.qty.label_tag }} {{ row.qty }}{% for e in row.qty.errors %}<small class="error-text">{{ e }}</small>{% endfor %}</div>{% endif %}
+        </div>
+      {% endfor %}
+      {% endif %}
+
+      <h2>3. Seus dados</h2>
+      {% include "includes/field.html" with field=form.full_name %}
+      <div class="grid-2">
+        {% include "includes/field.html" with field=form.email %}
+        {% include "includes/field.html" with field=form.phone %}
+      </div>
+      {% include "includes/field.html" with field=form.notes %}
+      <p class="muted small">Usamos seus dados apenas para esta reserva. Não pedimos CPF nem documentos nesta etapa.</p>
+      {% include "includes/field.html" with field=form.accept_terms %}
+      <p class="small"><a href="{% url 'terms' %}" target="_blank" rel="noopener">Ler condições de locação</a></p>
+
+      <div class="form-actions">
+        <button class="btn btn-ghost" type="submit" name="action" value="review">{% if review %}Atualizar valores{% else %}Revisar pedido{% endif %}</button>
+        {% if review %}<button class="btn btn-accent" type="submit" name="action" value="confirm">Confirmar reserva</button>{% endif %}
+      </div>
+    </form>
+
+    <aside class="side-card">
+      <div class="price big"><strong>{{ vehicle.daily_price|brl }}</strong><small>/ diária</small></div>
+      <div id="quote-box">
+        {% if quote %}{% include "includes/quote_box.html" %}{% else %}<p class="muted">Informe retirada e devolução para ver o orçamento.</p>{% endif %}
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "panel/base.html" %}
+{% load locadora_extras %}
+{% block title %}Painel · Taxas e descontos{% endblock %}
+{% block panel %}
+<div class="section-head"><h1>Taxas e descontos</h1>{% if perms.locadora.add_pricerule %}<a class="btn btn-accent" href="{% url 'panel_rule_create' %}">Nova regra</a>{% endif %}</div>
+<p class="muted">Nada é cobrado além do que estiver cadastrado e ativo aqui.</p>
+{% if object_list %}
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Nome</th><th>Tipo</th><th>Valor</th><th>A partir de</th><th>Situação</th><th>Ações</th></tr></thead>
+  <tbody>
+  {% for r in object_list %}
+    <tr>
+      <td>{{ r.name }}</td><td>{{ r.get_kind_display }}</td>
+      <td>{% if r.calc_type == "percentual" %}{{ r.value|percent }}%{% else %}{{ r.value|brl }}{% endif %}</td>
+      <td>{{ r.min_days }} diária{{ r.min_days|pluralize }}</td>
+      <td>{% if r.is_active %}<span class="badge badge-concluida">Ativa</span>{% else %}<span class="badge badge-v-inativo">Inativa</span>{% endif %}</td>
+      <td class="actions">
+        {% if perms.locadora.change_pricerule %}<a href="{% url 'panel_rule_update' r.pk %}">Editar</a>{% endif %}
+        {% if perms.locadora.delete_pricerule %}<a class="danger" href="{% url 'panel_rule_delete' r.pk %}">Excluir</a>{% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+{% else %}<div class="empty"><p>Nenhuma taxa ou desconto cadastrado.</p></div>{% endif %}
+{% endblock %}

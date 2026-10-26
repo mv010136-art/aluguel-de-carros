@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Página não encontrada{% endblock %}
+{% block content %}
+<section class="container narrow center section">
+  <h1>Página não encontrada</h1>
+  <p class="muted">O endereço que você tentou acessar não existe ou não está disponível para a sua conta.</p>
+  <a class="btn btn-accent" href="{% url 'catalog' %}">Ver veículos</a>
+</section>
+{% endblock %}

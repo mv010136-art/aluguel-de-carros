@@ -1,0 +1,9 @@
+{% load locadora_extras %}
+<div class="quote" id="quote-content">
+  <h3>Resumo do orçamento</h3>
+  <div class="quote-row"><span>{{ quote.days }} diária{{ quote.days|pluralize }} × {{ quote.daily_rate|brl }}</span><strong>{{ quote.days_total|brl }}</strong></div>
+  {% for line in quote.extras %}<div class="quote-row"><span>{{ line.label }}</span><strong>{{ line.subtotal|brl }}</strong></div>{% endfor %}
+  {% for charge in quote.charges %}<div class="quote-row"><span>{{ charge.label }}</span><strong>{{ charge.amount|brl }}</strong></div>{% endfor %}
+  <div class="quote-row quote-total"><span>Total estimado</span><strong>{{ quote.total|brl }}</strong></div>
+  <p class="muted small">Valor estimado, recalculado pelo sistema ao enviar a solicitação. Sem cobrança online nesta etapa.</p>
+</div>

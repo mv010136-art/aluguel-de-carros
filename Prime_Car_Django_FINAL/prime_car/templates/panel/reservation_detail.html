@@ -1,0 +1,36 @@
+{% extends "panel/base.html" %}
+{% block title %}Painel · {{ reservation.code }}{% endblock %}
+{% block panel %}
+<p class="breadcrumb"><a href="{% url 'panel_reservation_list' %}">Reservas</a> / {{ reservation.code }}</p>
+<h1>{{ reservation.code }} <span class="badge badge-{{ reservation.status }}">{{ reservation.get_status_display }}</span></h1>
+<div class="grid-2">
+  <div class="card form-card">
+    <h2>Dados</h2>
+    <dl class="spec-table">
+      <div><dt>Cliente</dt><dd>{{ reservation.customer.full_name }}</dd></div>
+      <div><dt>E-mail</dt><dd>{{ reservation.customer.email }}</dd></div>
+      <div><dt>Telefone</dt><dd>{{ reservation.customer.phone }}</dd></div>
+      <div><dt>Veículo</dt><dd>{{ reservation.vehicle.display_name }}</dd></div>
+      <div><dt>Retirada</dt><dd>{{ reservation.pickup_at|date:"d/m/Y H:i" }}</dd></div>
+      <div><dt>Devolução</dt><dd>{{ reservation.return_at|date:"d/m/Y H:i" }}</dd></div>
+      <div><dt>Criada em</dt><dd>{{ reservation.created_at|date:"d/m/Y H:i" }}</dd></div>
+    </dl>
+    {% if reservation.notes %}<h3>Observações do cliente</h3><p>{{ reservation.notes|linebreaksbr }}</p>{% endif %}
+    <h2>Valores</h2>
+    {% include "includes/reservation_breakdown.html" %}
+  </div>
+  <div class="card form-card">
+    <h2>Gerenciar</h2>
+    {% if perms.locadora.change_reservation %}
+    <form method="post" data-loading>
+      {% csrf_token %}
+      {% for field in form %}{% include "includes/field.html" %}{% endfor %}
+      <button class="btn btn-accent" type="submit">Salvar alterações</button>
+    </form>
+    {% else %}<p class="muted">Você não tem permissão para alterar reservas.</p>{% endif %}
+    {% if reservation.status == "cancelada" and perms.locadora.delete_reservation %}
+      <p><a class="danger" href="{% url 'panel_reservation_delete' reservation.pk %}">Excluir reserva cancelada</a></p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

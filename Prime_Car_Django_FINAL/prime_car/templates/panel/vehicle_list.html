@@ -1,0 +1,35 @@
+{% extends "panel/base.html" %}
+{% load locadora_extras %}
+{% block title %}Painel · Veículos{% endblock %}
+{% block panel %}
+<div class="section-head"><h1>Veículos</h1>{% if perms.locadora.add_vehicle %}<a class="btn btn-accent" href="{% url 'panel_vehicle_create' %}">Novo veículo</a>{% endif %}</div>
+<form class="toolbar" method="get">
+  <input class="input" type="search" name="q" value="{{ request.GET.q }}" placeholder="Buscar por nome, marca ou modelo">
+  <select class="input" name="status"><option value="">Todas as situações</option>{% for value, label in statuses %}<option value="{{ value }}"{% if request.GET.status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  <button class="btn btn-ghost" type="submit">Filtrar</button>
+</form>
+{% if object_list %}
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Veículo</th><th>Categoria</th><th>Diária</th><th>Situação</th><th>Ações</th></tr></thead>
+  <tbody>
+  {% for v in object_list %}
+    <tr>
+      <td>{{ v.display_name }} <small class="muted">{{ v.model }}</small>{% if v.is_demo %} <span class="tag tag-demo">Exemplo</span>{% endif %}</td>
+      <td>{{ v.get_category_display }}</td>
+      <td>{{ v.daily_price|brl }}</td>
+      <td><span class="badge badge-v-{{ v.status }}">{{ v.get_status_display }}</span></td>
+      <td class="actions">
+        <a href="{% url 'vehicle_detail' v.pk %}">Ver</a>
+        {% if perms.locadora.change_vehicle %}
+          <a href="{% url 'panel_vehicle_update' v.pk %}">Editar</a>
+          <form method="post" action="{% url 'panel_vehicle_toggle' v.pk %}">{% csrf_token %}<button class="link-btn" type="submit">{% if v.status == "inativo" %}Ativar{% else %}Desativar{% endif %}</button></form>
+        {% endif %}
+        {% if perms.locadora.delete_vehicle %}<a class="danger" href="{% url 'panel_vehicle_delete' v.pk %}">Excluir</a>{% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+{% include "includes/pagination.html" with p=page_obj %}
+{% else %}<div class="empty"><p>Nenhum veículo encontrado.</p></div>{% endif %}
+{% endblock %}

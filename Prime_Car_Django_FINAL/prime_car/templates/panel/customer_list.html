@@ -1,0 +1,26 @@
+{% extends "panel/base.html" %}
+{% block title %}Painel · Clientes{% endblock %}
+{% block panel %}
+<div class="section-head"><h1>Clientes</h1>{% if perms.locadora.add_customer %}<a class="btn btn-accent" href="{% url 'panel_customer_create' %}">Novo cliente</a>{% endif %}</div>
+<form class="toolbar" method="get">
+  <input class="input" type="search" name="q" value="{{ request.GET.q }}" placeholder="Buscar por nome, e-mail ou telefone">
+  <button class="btn btn-ghost" type="submit">Buscar</button>
+</form>
+{% if object_list %}
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Cadastro</th><th>Ações</th></tr></thead>
+  <tbody>
+  {% for c in object_list %}
+    <tr>
+      <td>{{ c.full_name }}</td><td>{{ c.email }}</td><td>{{ c.phone }}</td><td>{{ c.created_at|date:"d/m/Y" }}</td>
+      <td class="actions">
+        {% if perms.locadora.change_customer %}<a href="{% url 'panel_customer_update' c.pk %}">Editar</a>{% endif %}
+        {% if perms.locadora.delete_customer %}<a class="danger" href="{% url 'panel_customer_delete' c.pk %}">Excluir</a>{% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+{% include "includes/pagination.html" with p=page_obj %}
+{% else %}<div class="empty"><p>Nenhum cliente encontrado.</p></div>{% endif %}
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "panel/form.html" %}
+{% block after_form %}
+{% if object %}
+<h2>Galeria de imagens</h2>
+<div class="card form-card">
+  {% if object.gallery.all %}
+    <div class="gallery-admin">
+      {% for photo in object.gallery.all %}
+        <figure><img src="{{ photo.image.url }}" alt="{{ photo.caption|default:'Imagem da galeria' }}" loading="lazy">
+          <form method="post" action="{% url 'panel_vehicle_image_delete' photo.pk %}" data-confirm="Remover esta imagem?">{% csrf_token %}<button class="btn btn-danger btn-sm" type="submit">Remover</button></form>
+        </figure>
+      {% endfor %}
+    </div>
+  {% else %}<p class="muted">Nenhuma imagem adicional cadastrada.</p>{% endif %}
+  <form method="post" enctype="multipart/form-data" action="{% url 'panel_vehicle_image_add' object.pk %}" class="inline-fields" data-loading>
+    {% csrf_token %}
+    <input class="input" type="file" name="image" accept="image/*" required>
+    <input class="input" type="text" name="caption" maxlength="120" placeholder="Legenda (opcional)">
+    <button class="btn btn-ghost" type="submit">Adicionar imagem</button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,8 @@
+FOTOS ILUSTRATIVAS PARA TESTE
+
+Estas quatro imagens foram geradas por IA para demonstrar a aparência do catálogo. Elas NÃO representam veículos reais específicos, não comprovam a frota da locadora e não devem ser usadas para anunciar um veículo real sem conferir a correspondência.
+
+Para cadastrar: entre no /painel/, crie/edite um veículo e envie a foto correspondente no campo de imagem. Não coloque fotos na pasta de assets esperando que apareçam automaticamente no catálogo.
+
+Para anexar estas quatro imagens aos veículos de EXEMPLO (identificados no site como "Imagem ilustrativa"):
+  python manage.py seed_demo --with-photos

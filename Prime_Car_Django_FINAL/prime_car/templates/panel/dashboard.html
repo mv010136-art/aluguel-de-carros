@@ -1,0 +1,21 @@
+{% extends "panel/base.html" %}
+{% load locadora_extras %}
+{% block title %}Painel · Resumo{% endblock %}
+{% block panel %}
+<h1>Resumo</h1>
+<div class="grid-4 stats">
+  <div class="stat"><strong>{{ vehicle_count }}</strong><span>Veículos ({{ active_vehicle_count }} disponíveis)</span></div>
+  <div class="stat"><strong>{{ customer_count }}</strong><span>Clientes</span></div>
+  <div class="stat"><strong>{{ extra_count }}</strong><span>Adicionais ativos</span></div>
+  {% for row in status_rows %}{% if row.value == "pendente" %}<div class="stat"><strong>{{ row.total }}</strong><span>Reservas pendentes</span></div>{% endif %}{% endfor %}
+</div>
+<h2>Reservas por status</h2>
+<div class="chips">{% for row in status_rows %}<a class="chip" href="{% url 'panel_reservation_list' %}?status={{ row.value }}">{{ row.label }} <span>{{ row.total }}</span></a>{% endfor %}</div>
+<h2>Últimas reservas</h2>
+{% if recent %}
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Código</th><th>Cliente</th><th>Veículo</th><th>Total</th><th>Status</th></tr></thead>
+  <tbody>{% for r in recent %}<tr><td><a href="{% url 'panel_reservation_detail' r.pk %}">{{ r.code }}</a></td><td>{{ r.customer.full_name }}</td><td>{{ r.vehicle.display_name }}</td><td>{{ r.total|brl }}</td><td><span class="badge badge-{{ r.status }}">{{ r.get_status_display }}</span></td></tr>{% endfor %}</tbody>
+</table></div>
+{% else %}<div class="empty"><p>Nenhuma reserva ainda.</p></div>{% endif %}
+{% endblock %}

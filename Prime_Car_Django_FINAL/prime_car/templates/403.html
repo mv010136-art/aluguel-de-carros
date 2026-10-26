@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Acesso negado{% endblock %}
+{% block content %}
+<section class="container narrow center section">
+  <h1>Acesso negado</h1>
+  <p class="muted">Você não tem permissão para acessar esta página.</p>
+  <a class="btn btn-accent" href="{% url 'home' %}">Voltar ao início</a>
+</section>
+{% endblock %}

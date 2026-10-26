@@ -1,0 +1,7 @@
+{% load locadora_extras %}
+<div class="quote">
+  <div class="quote-row"><span>{{ reservation.days }} diária{{ reservation.days|pluralize }} × {{ reservation.daily_rate|brl }}</span><strong>{{ reservation.days_total|brl }}</strong></div>
+  {% for item in reservation.extras.all %}<div class="quote-row"><span>{{ item.service_name }}{% if item.quantity > 1 %} × {{ item.quantity }}{% endif %} <small class="muted">({{ item.get_billing_type_display }})</small></span><strong>{{ item.subtotal|brl }}</strong></div>{% endfor %}
+  {% for charge in reservation.charges.all %}<div class="quote-row"><span>{{ charge.label }}</span><strong>{{ charge.amount|brl }}</strong></div>{% endfor %}
+  <div class="quote-row quote-total"><span>Total</span><strong>{{ reservation.total|brl }}</strong></div>
+</div>

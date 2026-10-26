@@ -1,0 +1,29 @@
+{% extends "panel/base.html" %}
+{% load locadora_extras %}
+{% block title %}Painel · Reservas{% endblock %}
+{% block panel %}
+<h1>Reservas</h1>
+<form class="toolbar" method="get">
+  <input class="input" type="search" name="q" value="{{ request.GET.q }}" placeholder="Código, cliente ou veículo">
+  <select class="input" name="status"><option value="">Todos os status</option>{% for value, label in statuses %}<option value="{{ value }}"{% if request.GET.status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  <button class="btn btn-ghost" type="submit">Filtrar</button>
+</form>
+{% if object_list %}
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Código</th><th>Cliente</th><th>Veículo</th><th>Período</th><th>Total</th><th>Status</th></tr></thead>
+  <tbody>
+  {% for r in object_list %}
+    <tr>
+      <td><a href="{% url 'panel_reservation_detail' r.pk %}">{{ r.code }}</a></td>
+      <td>{{ r.customer.full_name }}</td>
+      <td>{{ r.vehicle.display_name }}</td>
+      <td>{{ r.pickup_at|date:"d/m/Y H:i" }} → {{ r.return_at|date:"d/m/Y H:i" }}</td>
+      <td>{{ r.total|brl }}</td>
+      <td><span class="badge badge-{{ r.status }}">{{ r.get_status_display }}</span></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+{% include "includes/pagination.html" with p=page_obj %}
+{% else %}<div class="empty"><p>Nenhuma reserva encontrada.</p></div>{% endif %}
+{% endblock %}

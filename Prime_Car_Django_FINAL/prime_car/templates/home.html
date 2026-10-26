@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Aluguel de veículos{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-text">
+      <span class="eyebrow">Aluguel por período · sem motorista</span>
+      <h1>O veículo certo para o seu dia a dia, sua viagem ou sua mudança.</h1>
+      <p>Escolha a categoria, informe as datas, personalize os adicionais e veja o valor total antes de solicitar a reserva.</p>
+    </div>
+    <form class="search-card" method="get" action="{% url 'catalog' %}">
+      <h2>Encontre seu veículo</h2>
+      <div class="field"><label for="{{ search_form.q.id_for_label }}">Marca, modelo ou nome</label>{{ search_form.q }}</div>
+      <div class="field"><label for="{{ search_form.category.id_for_label }}">Categoria</label>{{ search_form.category }}</div>
+      <div class="grid-2">
+        <div class="field"><label for="{{ search_form.pickup_at.id_for_label }}">Retirada</label>{{ search_form.pickup_at }}</div>
+        <div class="field"><label for="{{ search_form.return_at.id_for_label }}">Devolução</label>{{ search_form.return_at }}</div>
+      </div>
+      <button class="btn btn-accent btn-block" type="submit">Pesquisar veículos</button>
+    </form>
+  </div>
+</section>
+
+<section class="section container">
+  <div class="section-head"><h2>Veículos em destaque</h2><a href="{% url 'catalog' %}">Ver todos →</a></div>
+  {% if featured %}
+    <div class="grid-cards">{% for vehicle in featured %}{% include "includes/vehicle_card.html" %}{% endfor %}</div>
+  {% else %}
+    <div class="empty"><p>Ainda não há veículos cadastrados.</p>{% if user.is_staff %}<a class="btn btn-accent" href="{% url 'panel_vehicle_create' %}">Cadastrar veículo</a>{% endif %}</div>
+  {% endif %}
+</section>
+
+{% if categories %}
+<section class="section section-alt">
+  <div class="container">
+    <h2>Categorias disponíveis</h2>
+    <div class="chips">{% for c in categories %}<a class="chip" href="{% url 'catalog' %}?category={{ c.value }}">{{ c.label }} <span>{{ c.total }}</span></a>{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section container">
+  <h2>Como funciona</h2>
+  <div class="grid-4 steps">
+    <div class="step"><span>1</span><h3>Escolha</h3><p>Pesquise por categoria, preço, capacidade e disponibilidade.</p></div>
+    <div class="step"><span>2</span><h3>Personalize</h3><p>Informe o período e selecione apenas os adicionais que desejar.</p></div>
+    <div class="step"><span>3</span><h3>Revise</h3><p>Veja a discriminação completa dos valores antes de enviar.</p></div>
+    <div class="step"><span>4</span><h3>Solicite</h3><p>Receba o código da reserva e acompanhe o status na sua conta.</p></div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <h2>Por que alugar com a gente</h2>
+    <div class="grid-3">
+      <div class="benefit"><h3>Preço transparente</h3><p>Diárias, adicionais, taxas e descontos aparecem discriminados antes da confirmação.</p></div>
+      <div class="benefit"><h3>Você escolhe os extras</h3><p>Nada é cobrado automaticamente: só entra no total o que você selecionar.</p></div>
+      <div class="benefit"><h3>Categorias para cada necessidade</h3><p>De econômicos a picapes e 4x4 para transportar caixas e objetos.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section container narrow">
+  <h2>Perguntas frequentes</h2>
+  <details><summary>Como as diárias são calculadas?</summary><p>Cada período de 24 horas iniciado conta como uma diária, com tolerância de {{ site.grace_minutes }} minutos. Veja a <a href="{% url 'terms' %}">regra completa</a>.</p></details>
+  <details><summary>Preciso pagar online?</summary><p>Não. Nesta etapa a reserva é apenas solicitada, sem cobrança online. A confirmação e o pagamento seguem as regras da locadora.</p></details>
+  <details><summary>Por quanto tempo uma reserva pendente bloqueia o veículo?</summary><p>Por até {{ site.pending_hold_hours }} horas. Se não for confirmada nesse prazo, ela expira e o veículo é liberado.</p></details>
+  <details><summary>Posso cancelar?</summary><p>Sim, pela área “Minhas reservas”, enquanto a retirada ainda não tiver ocorrido.</p></details>
+  <details><summary>E o combustível?</summary><p>{{ site.fuel_policy }}</p></details>
+</section>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "panel/base.html" %}
+{% load locadora_extras %}
+{% block title %}Painel · Adicionais{% endblock %}
+{% block panel %}
+<div class="section-head"><h1>Serviços adicionais</h1>{% if perms.locadora.add_extraservice %}<a class="btn btn-accent" href="{% url 'panel_extra_create' %}">Novo serviço</a>{% endif %}</div>
+{% if object_list %}
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Serviço</th><th>Preço</th><th>Cobrança</th><th>Situação</th><th>Ações</th></tr></thead>
+  <tbody>
+  {% for e in object_list %}
+    <tr>
+      <td>{{ e.name }}{% if e.is_demo %} <span class="tag tag-demo">Exemplo</span>{% endif %}</td>
+      <td>{{ e.price|brl }}</td><td>{{ e.get_billing_type_display }}</td>
+      <td>{% if e.is_active %}<span class="badge badge-concluida">Ativo</span>{% else %}<span class="badge badge-v-inativo">Inativo</span>{% endif %}</td>
+      <td class="actions">
+        {% if perms.locadora.change_extraservice %}<a href="{% url 'panel_extra_update' e.pk %}">Editar</a>{% endif %}
+        {% if perms.locadora.delete_extraservice %}<a class="danger" href="{% url 'panel_extra_delete' e.pk %}">Excluir</a>{% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+{% else %}<div class="empty"><p>Nenhum serviço adicional cadastrado.</p></div>{% endif %}
+{% endblock %}

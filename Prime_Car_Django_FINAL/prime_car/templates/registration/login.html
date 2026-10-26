@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Entrar{% endblock %}
+{% block content %}
+<section class="container narrow section">
+  <div class="card form-card auth-card">
+    <h1>Entrar</h1>
+    <form method="post" data-loading>
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+      {% if form.non_field_errors %}<div class="message error">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+      {% for field in form %}{% include "includes/field.html" %}{% endfor %}
+      <button class="btn btn-accent btn-block" type="submit">Entrar</button>
+    </form>
+    <p class="muted">Ainda não tem conta? <a href="{% url 'signup' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Criar conta</a></p>
+  </div>
+</section>
+{% endblock %}

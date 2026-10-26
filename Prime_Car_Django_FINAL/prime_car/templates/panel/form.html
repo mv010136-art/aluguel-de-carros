@@ -1,0 +1,15 @@
+{% extends "panel/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block panel %}
+<h1>{{ title }}</h1>
+<form method="post" enctype="multipart/form-data" class="card form-card" data-loading>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="message error">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+  {% for field in form %}{% include "includes/field.html" %}{% endfor %}
+  <div class="form-actions">
+    <a class="btn btn-ghost" href="{{ back_url }}">Cancelar</a>
+    <button class="btn btn-accent" type="submit">Salvar</button>
+  </div>
+</form>
+{% block after_form %}{% endblock %}
+{% endblock %}

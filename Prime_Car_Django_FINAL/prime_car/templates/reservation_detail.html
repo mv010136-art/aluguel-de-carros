@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Reserva {{ reservation.code }}{% endblock %}
+{% block content %}
+<section class="container narrow section">
+  <p class="breadcrumb"><a href="{% url 'my_reservations' %}">Minhas reservas</a> / {{ reservation.code }}</p>
+  <h1>Reserva {{ reservation.code }} <span class="badge badge-{{ reservation.status }}">{{ reservation.get_status_display }}</span></h1>
+  <div class="card form-card">
+    <dl class="spec-table">
+      <div><dt>Veículo</dt><dd><a href="{{ reservation.vehicle.get_absolute_url }}">{{ reservation.vehicle.display_name }}</a></dd></div>
+      <div><dt>Retirada</dt><dd>{{ reservation.pickup_at|date:"d/m/Y H:i" }}</dd></div>
+      <div><dt>Devolução</dt><dd>{{ reservation.return_at|date:"d/m/Y H:i" }}</dd></div>
+      <div><dt>Solicitada em</dt><dd>{{ reservation.created_at|date:"d/m/Y H:i" }}</dd></div>
+      <div><dt>Titular</dt><dd>{{ reservation.customer.full_name }}</dd></div>
+    </dl>
+    <h2>Valores</h2>
+    {% include "includes/reservation_breakdown.html" %}
+    {% if reservation.notes %}<h3>Suas observações</h3><p>{{ reservation.notes|linebreaksbr }}</p>{% endif %}
+    {% if reservation.status == "pendente" %}<div class="message info">Sua solicitação está pendente. Se não for confirmada em até {{ site.pending_hold_hours }} horas após o envio, ela expira. Nenhuma cobrança foi feita online.</div>{% endif %}
+    {% if reservation.can_customer_cancel %}
+      <form method="post" action="{% url 'reservation_cancel' reservation.code %}" data-confirm="Cancelar esta reserva?">{% csrf_token %}<button class="btn btn-danger" type="submit">Cancelar reserva</button></form>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

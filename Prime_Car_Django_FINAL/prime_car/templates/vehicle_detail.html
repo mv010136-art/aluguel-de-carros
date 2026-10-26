@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load locadora_extras %}
+{% block title %}{{ vehicle.display_name }}{% endblock %}
+{% block content %}
+<section class="container section">
+  <p class="breadcrumb"><a href="{% url 'catalog' %}">Veículos</a> / {{ vehicle.display_name }}</p>
+  <div class="layout-detail">
+    <div>
+      <div class="gallery-main" data-gallery-main>{% include "includes/vehicle_image.html" %}</div>
+      {% if gallery %}
+      <div class="gallery-thumbs">
+        {% if vehicle.image %}<button type="button" class="thumb" data-gallery-thumb data-src="{{ vehicle.image.url }}"><img src="{{ vehicle.image.url }}" alt="Foto principal"></button>{% endif %}
+        {% for photo in gallery %}<button type="button" class="thumb" data-gallery-thumb data-src="{{ photo.image.url }}"><img src="{{ photo.image.url }}" alt="{{ photo.caption|default:vehicle.display_name }}" loading="lazy"></button>{% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="card-tags">
+        <span class="tag">{{ vehicle.get_category_display }}</span>
+        {% if vehicle.is_rentable %}<span class="tag tag-ok">Disponível</span>{% else %}<span class="tag tag-off">{{ vehicle.get_status_display }}</span>{% endif %}
+        {% if vehicle.is_demo %}<span class="tag tag-demo">Exemplo</span>{% endif %}
+      </div>
+      <h1>{{ vehicle.display_name }}</h1>
+      <p class="muted">{{ vehicle.model }}{% if vehicle.year %} · {{ vehicle.year }}{% endif %}</p>
+      {% if vehicle.description %}<p>{{ vehicle.description|linebreaksbr }}</p>{% endif %}
+
+      <h2>Características</h2>
+      <dl class="spec-table">
+        <div><dt>Categoria</dt><dd>{{ vehicle.get_category_display }}</dd></div>
+        <div><dt>Passageiros</dt><dd>{{ vehicle.seats }}</dd></div>
+        <div><dt>Transmissão</dt><dd>{{ vehicle.get_transmission_display }}</dd></div>
+        <div><dt>Combustível</dt><dd>{{ vehicle.get_fuel_display }}</dd></div>
+        {% if vehicle.cargo_info %}<div><dt>Carga</dt><dd>{{ vehicle.cargo_info }}</dd></div>{% endif %}
+        {% if vehicle.km_policy %}<div><dt>Quilometragem</dt><dd>{{ vehicle.km_policy }}</dd></div>{% endif %}
+      </dl>
+
+      <h2>Condições gerais</h2>
+      <ul class="plain-list">
+        <li>Cada período de 24h iniciado conta como 1 diária (tolerância de {{ site.grace_minutes }} min).</li>
+        <li>{{ site.pickup_info }}</li>
+        <li>{{ site.fuel_policy }}</li>
+        <li>Reserva solicitada sem cobrança online; confirmação e pagamento seguem as regras da locadora. <a href="{% url 'terms' %}">Ver condições completas</a>.</li>
+      </ul>
+    </div>
+
+    <aside class="side-card" id="orcamento">
+      <div class="price big"><strong>{{ vehicle.daily_price|brl }}</strong><small>/ diária</small></div>
+      {% if vehicle.is_rentable %}
+        <form method="get" action="{% url 'vehicle_detail' vehicle.pk %}#orcamento" data-loading>
+          <h3>Simule o seu aluguel</h3>
+          {% if form.non_field_errors %}<div class="message error">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+          {% include "includes/field.html" with field=form.pickup_at %}
+          {% include "includes/field.html" with field=form.return_at %}
+          {% if form.extra_rows %}
+            <h4>Personalize seu aluguel</h4>
+            {% for row in form.extra_rows %}
+              <div class="extra">
+                <label class="check-label">{{ row.check }} <span><strong>{{ row.extra.name }}</strong> — {{ row.extra.price|brl }} <small>({{ row.extra.get_billing_type_display }})</small></span></label>
+                {% if row.extra.description %}<small class="muted">{{ row.extra.description }}</small>{% endif %}
+                {% if row.qty %}<div class="qty">{{ row.qty.label_tag }} {{ row.qty }}</div>{% endif %}
+              </div>
+            {% endfor %}
+          {% endif %}
+          <button class="btn btn-ghost btn-block" type="submit">Simular orçamento</button>
+        </form>
+        {% if quote %}
+          {% include "includes/quote_box.html" %}
+          <a class="btn btn-accent btn-block" href="{% url 'booking' vehicle.pk %}?{{ booking_query }}">Continuar para a reserva</a>
+        {% else %}
+          <a class="btn btn-accent btn-block" href="{% url 'booking' vehicle.pk %}">Iniciar reserva</a>
+        {% endif %}
+      {% else %}
+        <div class="message warning">Este veículo está indisponível para locação no momento.</div>
+        <a class="btn btn-ghost btn-block" href="{% url 'catalog' %}">Ver outros veículos</a>
+      {% endif %}
+    </aside>
+  </div>
+</section>
+{% endblock %}

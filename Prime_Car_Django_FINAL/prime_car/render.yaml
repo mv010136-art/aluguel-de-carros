@@ -1,0 +1,53 @@
+# Blueprint do Render: aplicação Django (Python) + PostgreSQL gerenciado + disco persistente para as fotos.
+# Planos pagos são necessários: disco persistente não existe no plano free e o Postgres free expira em 30 dias.
+# Confira preços e nomes de planos no painel do Render antes de confirmar.
+services:
+  - type: web
+    name: prime-car-django
+    runtime: python
+    plan: starter
+    buildCommand: "bash build.sh"
+    startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
+    healthCheckPath: /healthz/
+    # Fotos dos veículos: disco persistente (sobrevive a deploys e reinícios).
+    # Alternativa sem disco: defina as variáveis AWS_* (S3/Cloudflare R2/Backblaze) e remova o bloco "disk".
+    disk:
+      name: prime-car-media
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.6
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_ALLOWED_HOSTS
+        value: .onrender.com        # acrescente seu domínio próprio, separado por vírgula
+      - key: DJANGO_CSRF_TRUSTED_ORIGINS
+        value: https://*.onrender.com   # acrescente https://seudominio.com.br
+      - key: DATABASE_URL
+        fromDatabase:
+          name: prime-car-db
+          property: connectionString
+      - key: MEDIA_ROOT
+        value: /var/data/media
+      - key: SITE_NAME
+        value: Prime Car
+
+  # Opcional: expira reservas pendentes a cada hora (não é obrigatório: o sistema já ignora pendentes
+  # vencidas na disponibilidade e as cancela em qualquer acesso). Cron jobs não existem no plano free.
+  # - type: cron
+  #   name: prime-car-expirar-pendentes
+  #   runtime: python
+  #   plan: starter
+  #   schedule: "0 * * * *"
+  #   buildCommand: "pip install -r requirements.txt"
+  #   startCommand: "python manage.py expire_pending_reservations"
+  #   envVars: (repita DJANGO_DEBUG, DJANGO_SECRET_KEY, DATABASE_URL do serviço web)
+
+databases:
+  - name: prime-car-db
+    databaseName: prime_car
+    user: prime_car
+    plan: basic-256mb

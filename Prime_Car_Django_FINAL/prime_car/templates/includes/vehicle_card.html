@@ -1,0 +1,26 @@
+{% load locadora_extras %}
+<article class="card vehicle-card">
+  <a class="card-media" href="{% url 'vehicle_detail' vehicle.pk %}">{% include "includes/vehicle_image.html" %}</a>
+  <div class="card-body">
+    <div class="card-tags">
+      <span class="tag">{{ vehicle.get_category_display }}</span>
+      {% if vehicle.is_rentable %}<span class="tag tag-ok">Disponível</span>{% else %}<span class="tag tag-off">{{ vehicle.get_status_display }}</span>{% endif %}
+      {% if vehicle.is_demo %}<span class="tag tag-demo">Exemplo</span>{% endif %}
+    </div>
+    <h3><a href="{% url 'vehicle_detail' vehicle.pk %}">{{ vehicle.display_name }}</a></h3>
+    <p class="muted">{{ vehicle.model }}{% if vehicle.year %} · {{ vehicle.year }}{% endif %}</p>
+    <ul class="specs">
+      <li>👤 {{ vehicle.seats }} passageiros</li>
+      <li>⚙️ {{ vehicle.get_transmission_display }}</li>
+      <li>⛽ {{ vehicle.get_fuel_display }}</li>
+      {% if vehicle.cargo_info %}<li>📦 {{ vehicle.cargo_info }}</li>{% endif %}
+    </ul>
+    <div class="card-foot">
+      <div class="price"><strong>{{ vehicle.daily_price|brl }}</strong><small>/ diária</small></div>
+      <div class="card-actions">
+        <a class="btn btn-ghost btn-sm" href="{% url 'vehicle_detail' vehicle.pk %}">Detalhes</a>
+        {% if vehicle.is_rentable %}<a class="btn btn-accent btn-sm" href="{% url 'booking' vehicle.pk %}">Reservar</a>{% else %}<span class="btn btn-sm btn-disabled" aria-disabled="true">Indisponível</span>{% endif %}
+      </div>
+    </div>
+  </div>
+</article>

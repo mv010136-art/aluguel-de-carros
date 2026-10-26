@@ -1,0 +1,15 @@
+{% extends "panel/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block panel %}
+<h1>{{ title }}</h1>
+<div class="card form-card">
+  <p>Tem certeza de que deseja excluir <strong>{{ object }}</strong>? Esta ação não pode ser desfeita.</p>
+  <form method="post" data-loading>
+    {% csrf_token %}
+    <div class="form-actions">
+      <a class="btn btn-ghost" href="{{ back_url }}">Voltar</a>
+      <button class="btn btn-danger" type="submit">Sim, excluir</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

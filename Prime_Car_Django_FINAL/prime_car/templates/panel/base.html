@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Painel{% endblock %}
+{% block content %}
+<div class="container panel-layout section">
+  <nav class="panel-nav" aria-label="Painel">
+    <a href="{% url 'panel_dashboard' %}">Resumo</a>
+    <a href="{% url 'panel_reservation_list' %}">Reservas</a>
+    <a href="{% url 'panel_vehicle_list' %}">Veículos</a>
+    <a href="{% url 'panel_customer_list' %}">Clientes</a>
+    <a href="{% url 'panel_extra_list' %}">Adicionais</a>
+    <a href="{% url 'panel_rule_list' %}">Taxas e descontos</a>
+    <a href="{% url 'admin:index' %}">Django Admin</a>
+  </nav>
+  <div class="panel-content">{% block panel %}{% endblock %}</div>
+</div>
+{% endblock %}

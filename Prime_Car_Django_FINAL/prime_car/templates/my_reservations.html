@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load locadora_extras %}
+{% block title %}Minhas reservas{% endblock %}
+{% block content %}
+<section class="container section">
+  <h1>Minhas reservas</h1>
+  {% if reservations %}
+    <div class="table-wrap"><table class="table">
+      <thead><tr><th>Código</th><th>Veículo</th><th>Retirada</th><th>Devolução</th><th>Total</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for r in reservations %}
+        <tr>
+          <td><a href="{% url 'reservation_detail' r.code %}">{{ r.code }}</a></td>
+          <td>{{ r.vehicle.display_name }}</td>
+          <td>{{ r.pickup_at|date:"d/m/Y H:i" }}</td>
+          <td>{{ r.return_at|date:"d/m/Y H:i" }}</td>
+          <td>{{ r.total|brl }}</td>
+          <td><span class="badge badge-{{ r.status }}">{{ r.get_status_display }}</span></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table></div>
+  {% else %}
+    <div class="empty"><h3>Você ainda não tem reservas</h3><p>Escolha um veículo e solicite sua primeira reserva.</p><a class="btn btn-accent" href="{% url 'catalog' %}">Ver veículos</a></div>
+  {% endif %}
+</section>
+{% endblock %}

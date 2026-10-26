@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Condições de locação{% endblock %}
+{% block content %}
+<section class="container narrow section prose">
+  <h1>Condições de locação</h1>
+  <h2>Cálculo das diárias</h2>
+  <p>Cada período de 24 horas iniciado conta como 1 diária, com tolerância de {{ site.grace_minutes }} minutos antes de iniciar uma nova diária. A locação mínima é de 1 diária e a máxima é de {{ site.max_days }} diárias. Exemplo: com a tolerância atual, 24h30 equivalem a 1 diária e 26h a 2 diárias.</p>
+  <h2>Valores</h2>
+  <p>O total soma as diárias, os adicionais que você selecionar e as taxas ou descontos cadastrados pela locadora e aplicáveis ao período. Percentuais incidem sobre diárias + adicionais. O preço da diária e dos adicionais fica registrado no momento da solicitação: alterações posteriores de preço não mudam reservas já feitas.</p>
+  <h2>Reserva e pagamento</h2>
+  <p>A reserva é solicitada sem cobrança online. Ela fica pendente até a confirmação pela locadora e, se não for confirmada em até {{ site.pending_hold_hours }} horas, expira e libera o veículo. A confirmação e o pagamento seguem as regras definidas pela empresa.</p>
+  <h2>Retirada e devolução</h2>
+  <p>{{ site.pickup_info }}</p>
+  <h2>Combustível</h2>
+  <p>{{ site.fuel_policy }}</p>
+  <h2>Cancelamento</h2>
+  <p>Você pode cancelar pela área “Minhas reservas” enquanto a reserva estiver pendente ou confirmada e a retirada ainda não tiver ocorrido.</p>
+  <h2>Dados pessoais</h2>
+  <p>Coletamos apenas nome, e-mail e telefone para gerenciar a reserva. Esses dados não aparecem em páginas públicas e só a equipe autorizada os consulta.</p>
+</section>
+{% endblock %}

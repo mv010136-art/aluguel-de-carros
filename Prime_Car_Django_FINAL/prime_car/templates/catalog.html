@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Veículos{% endblock %}
+{% block content %}
+<section class="container section">
+  <h1>Veículos</h1>
+  <div class="layout-sidebar">
+    <form class="filters card" method="get" data-loading>
+      <h2>Filtrar</h2>
+      {% if form.non_field_errors %}<div class="message error">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+      {% for field in form %}{% include "includes/field.html" %}{% endfor %}
+      <button class="btn btn-accent btn-block" type="submit">Aplicar filtros</button>
+      {% if has_filters %}<a class="btn btn-ghost btn-block" href="{% url 'catalog' %}">Limpar filtros</a>{% endif %}
+    </form>
+    <div>
+      {% if page.object_list %}
+        <p class="muted">{{ page.paginator.count }} veículo{{ page.paginator.count|pluralize }} encontrado{{ page.paginator.count|pluralize }}.</p>
+        <div class="grid-cards">{% for vehicle in page.object_list %}{% include "includes/vehicle_card.html" %}{% endfor %}</div>
+        {% include "includes/pagination.html" with p=page %}
+      {% else %}
+        <div class="empty">
+          <h3>Nenhum veículo encontrado</h3>
+          <p>{% if has_filters %}Nenhum veículo atende aos filtros escolhidos ou está livre no período informado.{% else %}Ainda não há veículos cadastrados.{% endif %}</p>
+          {% if has_filters %}<a class="btn btn-accent" href="{% url 'catalog' %}">Voltar à pesquisa</a>{% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
